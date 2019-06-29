@@ -1,6 +1,6 @@
 // Global variables & initialization
 
-let todoLists = JSON.parse(localStorage.getItem("todo-lists")) || [{title: getDate(), items: [], notes: "", ID: 0}];
+let todoLists = JSON.parse(localStorage.getItem("todo-js.todo-lists")) || [{title: getDate(), items: [], notes: "", ID: 0}];
 let nextID = Math.max(-1, ...todoLists.map((list) => list.ID)) + 1;
 let currentList = todoLists[0];
 
@@ -9,7 +9,11 @@ document.getElementById("new-list-button").onclick = newList;
 document.getElementById("sort-button").onclick = sort;
 document.getElementById("new-todo-button").onclick = () => newTodo(currentList.items.findIndex((item) => item.tags.done));
 document.getElementById("notes").oninput = (event) => save(currentList, {notes: event.target.value}, false); // Save, but don't re-render.
-window.addEventListener("storage", (event) => load(JSON.parse(event.newValue)));
+window.addEventListener("storage", (event) => {
+  if (event.key === "todo-js.todo-lists") {
+    load(JSON.parse(event.newValue));
+  }
+});
 
 render();
 
@@ -118,7 +122,7 @@ function save (target, values, reRender = true) {
   if (target && values) {
     Object.assign(target, values);
   }
-  localStorage.setItem("todo-lists", JSON.stringify(todoLists));
+  localStorage.setItem("todo-js.todo-lists", JSON.stringify(todoLists));
   if (reRender) {
     render();
   }
